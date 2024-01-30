@@ -1,7 +1,11 @@
 "use client";
-import Image from "next/image";
 import usePaginator from "./paginator.hooks";
-import { ProductCard } from "./components";
+import {
+  DescriptionText,
+  InfoCard,
+  PaginationButton,
+  ProductCard,
+} from "./components";
 import { sortOptions } from "./paginator.helpers";
 
 export default function Home() {
@@ -11,6 +15,7 @@ export default function Home() {
     categories,
     changeLimit,
     descriptionText,
+    error,
     filter,
     filteredProducts,
     loading,
@@ -25,12 +30,7 @@ export default function Home() {
     <main className="flex min-h-screen p-10 flex-col justify-between items-center">
       <div className="flex-col items-center justify-between w-full">
         <div className="z-10 w-full items-center justify-between font-mono text-sm lg:flex lg:flex-row flex-col">
-          <p className="z-50 fixed left-0 top-0 flex border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30 px-4 flex-wrap w-full justify-center">
-            <span className="px-2">Dummy API&nbsp;</span>
-            <span className="font-mono font-bold text-wrap px-2 text-center">
-              https://api.slingacademy.com/v1/sample-data/products
-            </span>
-          </p>
+          <InfoCard />
           <div className="z-50 flex w-full items-end justify-center pt-24 sm:pt-16 lg:pt-0 lg:static lg:h-auto lg:w-auto lg:bg-none flex-wrap gap-5">
             <select
               disabled={loading}
@@ -109,14 +109,11 @@ export default function Home() {
             />
           </div>
         </div>
+        {!error && <DescriptionText descriptionText={descriptionText} />}
         <div className="mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-          {descriptionText}
-        </div>
-        <div className="mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-          <button
+          <PaginationButton
             disabled={!allowPreviousProducts || loading}
             onClick={previousProducts}
-            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 cursor-pointer flex justify-center items-center disabled:hover:bg-inherit disabled:border-0 disabled:cursor-not-allowed"
           >
             <h2
               className={`text-2xl font-semibold group-disabled:text-gray-500`}
@@ -126,12 +123,10 @@ export default function Home() {
               </span>{" "}
               Previous
             </h2>
-          </button>
-
-          <button
+          </PaginationButton>
+          <PaginationButton
             disabled={!allowNextProducts || loading}
             onClick={nextProducts}
-            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 cursor-pointer flex justify-center items-center disabled:hover:bg-inherit disabled:border-0 disabled:cursor-not-allowed"
           >
             <h2
               className={`text-2xl font-semibold group-disabled:text-gray-500`}
@@ -141,21 +136,27 @@ export default function Home() {
                 -&gt;
               </span>
             </h2>
-          </button>
+          </PaginationButton>
         </div>
       </div>
 
-      <div className="relative h-full flex w-full items-center justify-center flex-wrap gap-6 my-16 flex-auto">
-        {loading ? (
-          <>Loading...</>
-        ) : filteredProducts.length > 0 ? (
-          filteredProducts?.map((product) => (
-            <ProductCard {...product} key={product.id} />
-          ))
-        ) : (
-          <>No Products Found</>
-        )}
-      </div>
+      {error ? (
+        <div className="relative h-full flex w-full items-center justify-center flex-wrap gap-6 my-16 flex-auto">
+          <p>{error}</p>
+        </div>
+      ) : (
+        <div className="relative h-full flex w-full items-center justify-center flex-wrap gap-6 my-16 flex-auto">
+          {loading ? (
+            <>Loading...</>
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts?.map((product) => (
+              <ProductCard {...product} key={product.id} />
+            ))
+          ) : (
+            <>No Products Found</>
+          )}
+        </div>
+      )}
     </main>
   );
 }

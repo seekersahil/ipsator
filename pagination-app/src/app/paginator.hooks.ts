@@ -20,18 +20,22 @@ const usePaginator = () => {
   const [filter, setFilter] = React.useState<ProductCategory>("");
   const [sortBy, setSortBy] = React.useState<SortOption>();
   const [search, setSearch] = React.useState<string>("");
+  const [error, setError] = React.useState<string | undefined>();
 
-  const filterProducts = (products: Product[], filter?: string) =>
+  const filterProducts = (products: Product[], filter?: string) => {
+    setLoading(true);
     setFilteredProducts(
       filter
         ? products.filter((product) => filter === product.category)
         : products
     );
+    setLoading(false);
+  };
 
   const fetchProducts = async ({ limit: number = 5, offset = 0 }) => {
+    setError(undefined);
     setLoading(true);
     try {
-      console.log("fetching");
       const res = await fetch(
         `https://api.slingacademy.com/v1/sample-data/products?limit=${limit}&offset=${offset}`
       );
@@ -58,6 +62,7 @@ const usePaginator = () => {
       );
       setLoading(false);
     } catch (err) {
+      setError("Something went wrong. Please try again!");
       setLoading(false);
     }
   };
@@ -70,7 +75,7 @@ const usePaginator = () => {
   const allowPreviousProducts = offset > 0;
   const allowNextProducts = offset + limit < total;
 
-  const descriptionText = `Showing ${
+  const descriptionText = `${loading ? "Loading" : "Showing"} ${
     filter ? `${filter.toUpperCase()} products from` : ""
   } ${offset + 1} - ${limit + offset} of ${total} products ${
     sortBy ? `sorted by ${sortBy.label}` : ""
@@ -98,6 +103,7 @@ const usePaginator = () => {
     categories,
     changeLimit,
     descriptionText,
+    error,
     filter,
     setFilter,
     filterProducts,

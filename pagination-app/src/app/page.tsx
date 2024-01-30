@@ -33,6 +33,7 @@ export default function Home() {
           <InfoCard />
           <div className="z-50 flex w-full items-end justify-center pt-24 sm:pt-16 lg:pt-0 lg:static lg:h-auto lg:w-auto lg:bg-none flex-wrap gap-5">
             <select
+              key="paginate-limit-select"
               disabled={loading}
               className="p-2"
               name="show"
@@ -50,6 +51,7 @@ export default function Home() {
               ))}
             </select>
             <select
+              key="filter-select"
               disabled={loading}
               className="p-2"
               name="show"
@@ -69,11 +71,11 @@ export default function Home() {
               ))}
             </select>
             <select
+              key="sort-select"
               disabled={loading}
               className="p-2"
               name="show"
               id="show"
-              defaultValue="Filter By Categories"
               onChange={(e) =>
                 setSortBy(
                   e.target.selectedOptions[0].value
@@ -100,10 +102,12 @@ export default function Home() {
               ))}
             </select>
             <input
+              key="search-text-boxa"
               disabled={loading}
               type="text"
               className="p-2 bg-gray-100"
               placeholder="Search products"
+              autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

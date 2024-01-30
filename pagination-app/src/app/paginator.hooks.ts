@@ -19,6 +19,7 @@ const usePaginator = () => {
   );
   const [filter, setFilter] = React.useState<ProductCategory>("");
   const [sortBy, setSortBy] = React.useState<SortOption>();
+  const [search, setSearch] = React.useState<string>("");
 
   const filterProducts = (products: Product[], filter?: string) =>
     setFilteredProducts(
@@ -30,19 +31,26 @@ const usePaginator = () => {
   const fetchProducts = async ({ limit: number = 5, offset = 0 }) => {
     setLoading(true);
     try {
+      console.log("fetching");
       const res = await fetch(
         `https://api.slingacademy.com/v1/sample-data/products?limit=${limit}&offset=${offset}`
       );
       const productsRes: ProductAPIModel = await res.json();
       setTotal(productsRes?.total_products || 0);
       setProducts(
-        sortBy
-          ? productsRes?.products.sort((a, b) =>
-              sortBy.value === "price-desc"
+        productsRes?.products
+          .sort((a, b) =>
+            sortBy
+              ? sortBy.value === "price-desc"
                 ? b.price - a.price
                 : a.price - b.price
-            )
-          : productsRes?.products || []
+              : 0
+          )
+          .filter(
+            (product) =>
+              product.name.toLowerCase().includes(search.toLowerCase()) ||
+              product.description.toLowerCase().includes(search.toLowerCase())
+          )
       );
       setCategories(
         findUnique(productsRes?.products?.map((product) => product.category)) ||
@@ -59,23 +67,30 @@ const usePaginator = () => {
   const previousProducts = () =>
     setOffset((prev) => (prev - limit < 0 ? 0 : prev - limit));
 
-  const allowPreviousProducts = offset >= 0;
+  const allowPreviousProducts = offset > 0;
   const allowNextProducts = offset + limit < total;
+
   const descriptionText = `Showing ${
     filter ? `${filter.toUpperCase()} products from` : ""
   } ${offset + 1} - ${limit + offset} of ${total} products ${
     sortBy ? `sorted by ${sortBy.label}` : ""
-  }`;
+  } ${search ? `containing "${search}"` : ""}`;
 
   React.useEffect(() => {
     fetchProducts({ limit, offset });
   }, [limit, offset, sortBy]);
 
+  // debouncing for search
+  React.useEffect(() => {
+    const searchProducts = setTimeout(() => {
+      fetchProducts({ limit, offset });
+    }, 300);
+    return () => clearTimeout(searchProducts);
+  }, [search]);
+
   React.useEffect(() => {
     filterProducts(products, filter);
   }, [products, filter]);
-
-  console.log(sortBy);
 
   return {
     allowNextProducts,
@@ -92,7 +107,9 @@ const usePaginator = () => {
     nextProducts,
     offset,
     previousProducts,
+    search,
     setOffset,
+    setSearch,
     setSortBy,
     sortBy,
     total,

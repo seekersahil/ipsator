@@ -24,15 +24,16 @@ export default function Home() {
   return (
     <main className="flex min-h-screen p-10 flex-col justify-between items-center">
       <div className="flex-col items-center justify-between w-full">
-        <div className="z-10 w-full items-center justify-between font-mono text-sm lg:flex">
-          <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30 px-4">
-            Dummy API&nbsp;
-            <code className="font-mono font-bold text-wrap">
+        <div className="z-10 w-full items-center justify-between font-mono text-sm lg:flex lg:flex-row flex-col">
+          <p className="z-50 fixed left-0 top-0 flex border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30 px-4 flex-wrap w-full justify-center">
+            <span className="px-2">Dummy API&nbsp;</span>
+            <span className="font-mono font-bold text-wrap px-2 text-center">
               https://api.slingacademy.com/v1/sample-data/products
-            </code>
+            </span>
           </p>
-          <div className="fixed bottom-0 left-0 flex h-16 w-full items-end justify-center bg-gradient-to-t from-white via-white lg:static lg:h-auto lg:w-auto lg:bg-none">
+          <div className="z-50 flex w-full items-end justify-center pt-24 sm:pt-16 lg:pt-0 lg:static lg:h-auto lg:w-auto lg:bg-none flex-wrap gap-5">
             <select
+              disabled={loading}
               className="p-2"
               name="show"
               id="show"
@@ -50,21 +51,17 @@ export default function Home() {
             </select>
             <select
               disabled={loading}
-              className="p-2 ml-5"
+              className="p-2"
               name="show"
               onChange={(e) => setFilter(e.target.value)}
               id="show"
-              defaultValue="Filter By Categories"
               value={filter}
             >
-              <option value={""} selected={!filter}>
-                All categories
-              </option>
+              <option value={""}>All categories</option>
               {Array.from(categories)?.map((category, index) => (
                 <option
                   value={category.toString()}
                   key={`paginate-limit-${index}`}
-                  defaultValue={5}
                   className="uppercase"
                 >
                   {category}
@@ -73,7 +70,7 @@ export default function Home() {
             </select>
             <select
               disabled={loading}
-              className="p-2 ml-5"
+              className="p-2"
               name="show"
               id="show"
               defaultValue="Filter By Categories"
@@ -103,20 +100,21 @@ export default function Home() {
               ))}
             </select>
             <input
+              disabled={loading}
               type="text"
-              className="p-2 ml-5"
+              className="p-2 bg-gray-100"
               placeholder="Search products"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
-        <div className="mt-24 lg:mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+        <div className="mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           {descriptionText}
         </div>
-        <div className="mt-24 lg:mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+        <div className="mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <button
-            disabled={!allowPreviousProducts}
+            disabled={!allowPreviousProducts || loading}
             onClick={previousProducts}
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 cursor-pointer flex justify-center items-center disabled:hover:bg-inherit disabled:border-0 disabled:cursor-not-allowed"
           >
@@ -131,7 +129,7 @@ export default function Home() {
           </button>
 
           <button
-            disabled={!allowNextProducts}
+            disabled={!allowNextProducts || loading}
             onClick={nextProducts}
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30 cursor-pointer flex justify-center items-center disabled:hover:bg-inherit disabled:border-0 disabled:cursor-not-allowed"
           >

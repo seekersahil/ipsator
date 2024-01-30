@@ -2,12 +2,13 @@ export type Product = {
   id: number;
   name: string;
   description: string;
-  category: string;
+  category: ProductCategory;
   created_at: string;
   photo_url: string;
   price: number;
   updated_at: string;
 };
+export type ProductCategory = string;
 
 export type ProductAPIModel = {
   limit: number;

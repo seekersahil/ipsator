@@ -7,11 +7,15 @@ export default function Home() {
   const {
     allowNextProducts,
     allowPreviousProducts,
+    categories,
     changeLimit,
+    descriptionText,
+    filter,
+    filteredProducts,
     loading,
     nextProducts,
     previousProducts,
-    products,
+    setFilter,
   } = usePaginator();
   return (
     <main className="flex min-h-screen p-10 flex-col justify-between items-center">
@@ -40,9 +44,34 @@ export default function Home() {
                 </option>
               ))}
             </select>
+            <select
+              disabled={loading}
+              className="p-2 ml-5"
+              name="show"
+              onChange={(e) => setFilter(e.target.value)}
+              id="show"
+              defaultValue="Filter By Categories"
+            >
+              <option value={""} selected={!filter}>
+                All categories
+              </option>
+              {Array.from(categories)?.map((category, index) => (
+                <option
+                  selected={filter === category}
+                  value={category.toString()}
+                  key={`paginate-limit-${index}`}
+                  defaultValue={5}
+                  className="uppercase"
+                >
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-
+        <div className="mt-24 lg:mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+          {descriptionText}
+        </div>
         <div className="mt-24 lg:mt-10 flex place-content-center place-items-center text-center lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <button
             disabled={!allowPreviousProducts}
@@ -76,13 +105,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="relative h-full flex w-full items-center justify-center flex-wrap gap-6 my-16 before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
+      <div className="relative h-full flex w-full items-center justify-center flex-wrap gap-6 my-16 flex-auto">
         {loading ? (
           <>Loading...</>
-        ) : (
-          products.map((product) => (
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts?.map((product) => (
             <ProductCard {...product} key={product.id} />
           ))
+        ) : (
+          <>No Products Found</>
         )}
       </div>
     </main>

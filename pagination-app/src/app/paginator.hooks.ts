@@ -89,7 +89,7 @@ const usePaginator = () => {
   React.useEffect(() => {
     const searchProducts = setTimeout(() => {
       fetchProducts({ limit, offset });
-    }, 300);
+    }, 700);
     return () => clearTimeout(searchProducts);
   }, [search]);
 

@@ -10,6 +10,11 @@ export type Product = {
 };
 export type ProductCategory = string;
 
+export type SortOption = {
+  label: string;
+  value: string;
+};
+
 export type ProductAPIModel = {
   limit: number;
   message: string;

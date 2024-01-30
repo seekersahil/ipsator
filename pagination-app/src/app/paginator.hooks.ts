@@ -1,5 +1,10 @@
 import React from "react";
-import { Product, ProductAPIModel, ProductCategory } from "./paginator.types";
+import {
+  Product,
+  ProductAPIModel,
+  ProductCategory,
+  SortOption,
+} from "./paginator.types";
 import { findUnique } from "./paginator.helpers";
 
 const usePaginator = () => {
@@ -13,6 +18,7 @@ const usePaginator = () => {
     []
   );
   const [filter, setFilter] = React.useState<ProductCategory>("");
+  const [sortBy, setSortBy] = React.useState<SortOption>();
 
   const filterProducts = (products: Product[], filter?: string) =>
     setFilteredProducts(
@@ -29,7 +35,15 @@ const usePaginator = () => {
       );
       const productsRes: ProductAPIModel = await res.json();
       setTotal(productsRes?.total_products || 0);
-      setProducts(productsRes?.products || []);
+      setProducts(
+        sortBy
+          ? productsRes?.products.sort((a, b) =>
+              sortBy.value === "price-desc"
+                ? b.price - a.price
+                : a.price - b.price
+            )
+          : productsRes?.products || []
+      );
       setCategories(
         findUnique(productsRes?.products?.map((product) => product.category)) ||
           []
@@ -49,16 +63,19 @@ const usePaginator = () => {
   const allowNextProducts = offset + limit < total;
   const descriptionText = `Showing ${
     filter ? `${filter.toUpperCase()} products from` : ""
-  } ${offset + 1} - ${limit + offset} of ${total} products`;
+  } ${offset + 1} - ${limit + offset} of ${total} products ${
+    sortBy ? `sorted by ${sortBy.label}` : ""
+  }`;
 
   React.useEffect(() => {
     fetchProducts({ limit, offset });
-  }, [limit, offset]);
+  }, [limit, offset, sortBy]);
 
   React.useEffect(() => {
     filterProducts(products, filter);
   }, [products, filter]);
-  console.log(filteredProducts);
+
+  console.log(sortBy);
 
   return {
     allowNextProducts,
@@ -76,6 +93,8 @@ const usePaginator = () => {
     offset,
     previousProducts,
     setOffset,
+    setSortBy,
+    sortBy,
     total,
   };
 };

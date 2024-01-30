@@ -2,6 +2,7 @@
 import Image from "next/image";
 import usePaginator from "./paginator.hooks";
 import { ProductCard } from "./components";
+import { sortOptions } from "./paginator.helpers";
 
 export default function Home() {
   const {
@@ -16,6 +17,7 @@ export default function Home() {
     nextProducts,
     previousProducts,
     setFilter,
+    setSortBy,
   } = usePaginator();
   return (
     <main className="flex min-h-screen p-10 flex-col justify-between items-center">
@@ -51,19 +53,50 @@ export default function Home() {
               onChange={(e) => setFilter(e.target.value)}
               id="show"
               defaultValue="Filter By Categories"
+              value={filter}
             >
               <option value={""} selected={!filter}>
                 All categories
               </option>
               {Array.from(categories)?.map((category, index) => (
                 <option
-                  selected={filter === category}
                   value={category.toString()}
                   key={`paginate-limit-${index}`}
                   defaultValue={5}
                   className="uppercase"
                 >
                   {category}
+                </option>
+              ))}
+            </select>
+            <select
+              disabled={loading}
+              className="p-2 ml-5"
+              name="show"
+              id="show"
+              defaultValue="Filter By Categories"
+              onChange={(e) =>
+                setSortBy(
+                  e.target.selectedOptions[0].value
+                    ? {
+                        value: e.target.selectedOptions[0].value,
+                        label: e.target.selectedOptions[0].label,
+                      }
+                    : undefined
+                )
+              }
+            >
+              <option value={""} selected={!filter}>
+                Sort By
+              </option>
+              {sortOptions?.map((option, index) => (
+                <option
+                  value={option.value}
+                  key={`sort-option-${index}`}
+                  defaultValue={5}
+                  className="uppercase"
+                >
+                  {option.label}
                 </option>
               ))}
             </select>
